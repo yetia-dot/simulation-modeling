@@ -1,0 +1,6 @@
+simpy>=4.0.1
+pandas
+pyyaml
+numpy
+plotly
+matplotlib    # optional for static plotting
