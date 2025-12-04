@@ -7,13 +7,13 @@ import math
 # -----------------------
 # Simulation parameters
 # -----------------------
-SIM_TIME = 60 * 5  # 5 minutes for test
+SIM_TIME = 60 * 30  # 30 mins for demonstration
 RANDOM_SEED = 42
 
 # -----------------------
 # Player arrival
 # -----------------------
-PLAYER_ARRIVAL_RATE = 1/12.0  # ~5 players/min
+PLAYER_ARRIVAL_RATE = 1/6.0  
 
 # -----------------------
 # Match parameters
