@@ -27,13 +27,22 @@ def verify_queue_match(metrics_df, outdir):
 
     # Match creation analysis
     matches = metrics_df[metrics_df['metric'] == 'matches_created']
-    if not matches.empty:
-        plt.figure(figsize=(8,5))
-        plt.hist(matches['value'], bins=20, alpha=0.7)
-        plt.title("Number of Matches Created")
-        plt.xlabel("Count")
-        plt.ylabel("Frequency")
-        path = os.path.join(outdir, "matches_created.png")
+
+    # Group by timestamp to count occurrences of match creations
+    match_counts = matches.groupby('timestamp').size()
+
+    print(f"[MATCH] Total match creation entries: {len(matches)}")
+    print(f"[MATCH] Match counts per timestamp: {match_counts.head()}")
+
+    if not match_counts.empty:
+        # Plot match creation counts per timestamp
+        plt.figure(figsize=(8, 5))
+        plt.bar(match_counts.index, match_counts.values, width=0.05, alpha=0.7)
+        plt.title("Number of Matches Created Over Time")
+        plt.xlabel("Time")
+        plt.ylabel("Match Count")
+        plt.tight_layout()
+        path = os.path.join(outdir, "matches_created_over_time.png")
         plt.savefig(path)
         plt.close()
         print(f"[MATCH] Saved plot: {path}")

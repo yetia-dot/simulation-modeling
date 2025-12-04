@@ -16,13 +16,17 @@ def verify_pubsub(metrics_df, outdir):
     # Plot retries over time
     retries_df = pub[pub['metric'] == "pubsub_retry"]
     if not retries_df.empty:
+        # Group retries by timestamp to count occurrences
+        retry_counts = retries_df.groupby('timestamp').size()
+
+        # Plot retries counts over time
         plt.figure(figsize=(10,5))
-        plt.plot(retries_df['timestamp'], retries_df['value'], label='Retries')
+        plt.bar(retry_counts.index, retry_counts.values, width=0.05, alpha=0.7)
         plt.title("PubSub Retries Over Time")
         plt.xlabel("Time")
-        plt.ylabel("Retries")
+        plt.ylabel("Retry Count")
         plt.tight_layout()
-        path = os.path.join(outdir, "pubsub_retries.png")
+        path = os.path.join(outdir, "pubsub_retries_over_time.png")
         plt.savefig(path)
         plt.close()
         print(f"[PUBSUB] Saved plot: {path}")
