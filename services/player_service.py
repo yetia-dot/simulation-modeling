@@ -40,8 +40,17 @@ class PlayerService:
     # Logging
     # ---------------------------------------------------------
     def _log(self, msg: str):
-        (f"{self.env.now:.3f}: [PLAYERSERVICE] {msg}")
-        self.metrics.log_event(f"{self.env.now:.3f}: PLAYER {msg}")
+        """
+        Convert old string log to structured metrics event.
+        """
+        s = f"{self.env.now:.3f}: [PLAYERSERVICE] {msg}"
+        print(s)
+        # Use structured payload for metrics
+        self.metrics.log_event(
+            event_type="player_service_log",
+            payload={"message": msg},
+            timestamp=self.env.now
+        )
 
     # ---------------------------------------------------------
     # Main message loop
@@ -75,7 +84,6 @@ class PlayerService:
             # Publish authenticated player
             # -------------------------
             msg = self._make_message(player)
-
             self.broker.publish(
                 topic="player_authenticated",
                 message=msg,
@@ -86,5 +94,3 @@ class PlayerService:
 
         except Exception as e:
             raise
-
-

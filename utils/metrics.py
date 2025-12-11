@@ -1,7 +1,7 @@
 import os
 import time
 from collections import defaultdict
-from typing import Any, Dict
+from typing import Any, Dict, Optional
 import pandas as pd
 
 class MetricsCollector:
@@ -16,20 +16,28 @@ class MetricsCollector:
 
     def reset(self):
         self.metrics: defaultdict[str, list] = defaultdict(list)
-        self.events: list[str] = []
+        self.events: list[Dict[str, Any]] = []
 
-    def record(self, metric_name: str, value: Any, timestamp: float = None, **meta: Dict[str, Any]):
+    def record(self, metric_name: str, value: Any, timestamp: Optional[float] = None, **meta: Dict[str, Any]):
         """
         Record a metric value with optional timestamp and metadata.
         """
         ts = timestamp if timestamp is not None else time.time()
         self.metrics[metric_name].append((ts, value, meta or {}))
 
-    def log_event(self, event: str):
+    def log_event(self, event_type: str, payload: Dict[str, Any], timestamp: Optional[float] = None):
         """
-        Log a simulation event as a string.
+        Log a simulation event with optional timestamp.
         """
+        ts = timestamp if timestamp is not None else time.time()
+        event = {
+            "event_type": event_type,
+            "payload": payload,
+            "timestamp": ts
+        }
         self.events.append(event)
+        # Optional debug print
+        print(f"[METRICS] {event_type} @ {ts}: {payload}")
 
     def save(self) -> str:
         """
@@ -50,7 +58,7 @@ class MetricsCollector:
         metric_file = os.path.join(self.out_dir, "metrics.csv")
         df.to_csv(metric_file, index=False)
 
-        # Save event logs
+        # Save event logs as structured JSON lines
         events_file = os.path.join(self.out_dir, "events.log")
         with open(events_file, "w") as f:
             for ev in self.events:

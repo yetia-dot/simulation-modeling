@@ -3,11 +3,9 @@ import random
 from typing import Any, List
 from config import AVG_TURNS_PER_MATCH, AVG_TIME_PER_TURN, TURN_TIME_STD
 
-
 class GameLogicService:
     """
     Game logic service node.
-
     Subscribes to "match_created".
     Simulates turn processing and publishes "turn_completed".
     """
@@ -36,8 +34,14 @@ class GameLogicService:
     # Logging (unified with other services)
     # -------------------------------------------------------------
     def _log(self, msg: str):
-        (f"{self.env.now:.3f}: [GAMELOGIC] {msg}")
-        self.metrics.log_event(f"{self.env.now:.3f}: GAME {msg}")
+        s = f"{self.env.now:.3f}: [GAMELOGIC] {msg}"
+        print(s)
+        # Structured metrics event with timestamp
+        self.metrics.log_event(
+            event_type="game_logic_log",
+            payload={"message": msg},
+            timestamp=self.env.now
+        )
 
     # -------------------------------------------------------------
     # PubSub inbox entry
